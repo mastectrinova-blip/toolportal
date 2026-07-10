@@ -183,7 +183,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 
   <div class="main-content">
     <div class="topbar">
-      <button onclick="window.location.href='toolportal.html?skip_login=true'" style="display:flex;align-items:center;gap:6px;background:none;border:1px solid #e2e8f0;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;color:#475569;cursor:pointer;margin-right:18px;transition:all 0.15s ease;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='none'">
+      <button onclick="trinovaBackToPortal()" style="display:flex;align-items:center;gap:6px;background:none;border:1px solid #e2e8f0;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;color:#475569;cursor:pointer;margin-right:18px;transition:all 0.15s ease;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='none'">
         &#8592; Back to ToolPortal
       </button>
       <div class="topbar-breadcrumb" id="breadcrumb">Audit Tool</div>
@@ -696,6 +696,17 @@ FDN : "SubNetwork=ONRM_ROOT_MO,MeContext=XXSITEIDXX,ManagedElement=XXSITEIDXX,EN
 voicePrio : 0</script>
 
 <script>
+// ── ToolPortal SPA back navigation ─────────────────────────────────────────
+// When embedded in the ToolPortal shell (via <iframe>), tell the parent to
+// navigate back to the dashboard. When opened standalone (e.g. by a
+// developer testing this file directly), there is no parent app to notify,
+// so this safely does nothing instead of navigating to a broken URL.
+function trinovaBackToPortal() {
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage({ type: 'trinova:navigate', target: 'dashboard' }, '*');
+  }
+}
+
 var sel={nds:false,fga:false,v3:false,v4:false,v5:false,v6:false,v7:false,v8:false};
 var fgaGen='auto';
 
