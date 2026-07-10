@@ -216,6 +216,7 @@ const TOOLS = [
     id: "nr-bl",
     name: "NR-BL",
     icon: "hub",
+    src: "./nrbltool.html",
     description:
       "Manage and optimize Network Resource Baseline configurations. Access real-time bandwidth metrics, resource allocation logs, and predictive maintenance schedules for enterprise-wide nodes.",
   },
@@ -223,6 +224,7 @@ const TOOLS = [
     id: "audits",
     name: "Audits",
     icon: "fact_check",
+    src: "./audit-tool.html",
     description:
       "Comprehensive compliance tracking and internal auditing engine. Review historical discrepancy reports, verify security protocols, and generate certified enterprise audit documentation.",
   },
@@ -230,19 +232,19 @@ const TOOLS = [
 
 const RECENT_UPDATES = [
   {
-    icon: "description",
-    title: "Audit_Report_Q3_v2.pdf",
-    subtitle: "Generated 2 hours ago by System Admin",
+    icon: "hub",
+    title: "NDS_Delta_v12",
+    subtitle: "Added to the tool on 07-01-2026.",
   },
   {
-    icon: "hub",
-    title: "Node Baseline Update #442",
-    subtitle: "Applied to Regional Cluster A · 5 hours ago",
+    icon: "description",
+    title: "GS 26Q1 REV_26.05",
+    subtitle: "Added to the tool on 06-26-2026.",
   },
   {
     icon: "fact_check",
-    title: "Audit_Report_Q3_v3.pdf",
-    subtitle: "Generated yesterday by System Admin",
+    title: "Lock/Unlock Tool",
+    subtitle: "Added to the tool on 06-15-2026.",
   },
 ];
 
@@ -525,37 +527,9 @@ function TopBar({ user, onNavigate, onLogout, active, brand }) {
         })}
       </nav>
 
-      <div style={{ position: "relative", width: 260, display: "none" }} className="topbar-search">
-        <span className="msym" style={{ position: "absolute", left: 12, top: 8, fontSize: 18, color: "var(--slate-400)" }}>search</span>
-        <input
-          placeholder="Search tools & updates..."
-          style={{
-            width: "100%",
-            height: 36,
-            borderRadius: 9,
-            border: "1px solid rgba(148,163,184,0.3)",
-            background: "var(--ink-50)",
-            padding: "0 12px 0 36px",
-            fontSize: 13.5,
-            outline: "none",
-          }}
-        />
-      </div>
 
-      {user.role === "operator" && (
-        <button onClick={() => onNavigate("admin-login")} className="btn btn-ghost" style={{ fontSize: 13, padding: "8px 14px", whiteSpace: "nowrap" }}>
-          <span className="msym" style={{ fontSize: 16 }}>lock</span>
-          Admin login
-        </button>
-      )}
 
-      <button aria-label="Notifications" style={{ background: "none", border: "none", position: "relative", padding: 6 }}>
-        <span className="msym" style={{ fontSize: 21, color: "var(--slate-400)" }}>notifications</span>
-        <span style={{ position: "absolute", top: 5, right: 5, width: 7, height: 7, borderRadius: "50%", background: "var(--red-500)" }} />
-      </button>
-      <button aria-label="Help" style={{ background: "none", border: "none", padding: 6 }}>
-        <span className="msym" style={{ fontSize: 21, color: "var(--slate-400)" }}>help</span>
-      </button>
+
 
       <div ref={ref} style={{ position: "relative" }}>
         <button
@@ -646,12 +620,11 @@ function StatCard({ label, value, sub, accent }) {
   );
 }
 
-function ToolCard({ tool, onLaunch }) {
+function ToolCard({ tool, onLaunch, onOpenTool }) {
   function handleLaunch() {
-    if (tool.id === "audits") {
-      window.open("./audit-tool.html", "_blank");
-    } else if (tool.id === "nr-bl") {
-      window.open("./nrbl-tool.html", "_blank");
+    if (tool.src && onOpenTool) {
+      // Tools with a src file are opened in-app (SPA view), not a new tab.
+      onOpenTool(tool);
     } else {
       onLaunch(tool);
     }
@@ -693,7 +666,7 @@ function ToolCard({ tool, onLaunch }) {
   );
 }
 
-function Dashboard({ user, onNavigate, onLogout, onElevate }) {
+function Dashboard({ user, onNavigate, onLogout, onElevate, onOpenTool }) {
   const [launchedTool, setLaunchedTool] = useState(null);
   const [elevating, setElevating] = useState(false);
   const [pin, setPin] = useState("");
@@ -726,7 +699,7 @@ function Dashboard({ user, onNavigate, onLogout, onElevate }) {
         <h2 className="display" style={{ fontSize: 17, fontWeight: 700, margin: "0 0 14px" }}>Tools</h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 18, marginBottom: 36 }}>
           {TOOLS.map((tool) => (
-            <ToolCard key={tool.id} tool={tool} onLaunch={setLaunchedTool} />
+            <ToolCard key={tool.id} tool={tool} onLaunch={setLaunchedTool} onOpenTool={onOpenTool} />
           ))}
         </div>
 
@@ -735,7 +708,6 @@ function Dashboard({ user, onNavigate, onLogout, onElevate }) {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
               <h2 className="display" style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>Recent tool updates</h2>
               <button style={{ background: "none", border: "none", fontSize: 13, fontWeight: 600, color: "var(--blue-500)", display: "flex", alignItems: "center", gap: 4 }}>
-                View all <span className="msym" style={{ fontSize: 16 }}>arrow_forward</span>
               </button>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
@@ -756,39 +728,7 @@ function Dashboard({ user, onNavigate, onLogout, onElevate }) {
             </div>
           </div>
 
-          <div
-            style={{
-              background: "linear-gradient(160deg, var(--navy-900), var(--navy-800))",
-              borderRadius: 16,
-              padding: "30px 26px",
-              color: "white",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              textAlign: "center",
-            }}
-          >
-            <div style={{ width: 52, height: 52, borderRadius: "50%", background: "rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 18 }}>
-              <span className="msym" style={{ fontSize: 26 }}>{user.role === "admin" ? "shield_lock" : "lock"}</span>
-            </div>
-            <h3 className="display" style={{ fontSize: 17, fontWeight: 700, margin: "0 0 8px" }}>System status</h3>
-            <p style={{ fontSize: 13, color: "var(--slate-300)", lineHeight: 1.6, margin: "0 0 22px" }}>
-              {user.role === "admin"
-                ? "You have administrator access. Manage team members and audit logs from the Admin panel."
-                : "This diagnostic telemetry panel is restricted to system administrators."}
-            </p>
-            {user.role === "admin" ? (
-              <button onClick={() => onNavigate("admin")} className="btn btn-block" style={{ background: "white", color: "var(--navy-900)", height: 42 }}>
-                <span className="msym" style={{ fontSize: 17 }}>admin_panel_settings</span>
-                Open admin panel
-              </button>
-            ) : (
-              <button onClick={() => setElevating(true)} className="btn btn-block" style={{ background: "white", color: "var(--navy-900)", height: 42 }}>
-                <span className="msym" style={{ fontSize: 17 }}>lock_open</span>
-                Elevate access
-              </button>
-            )}
-          </div>
+
         </div>
       </div>
 
@@ -846,6 +786,42 @@ function Dashboard({ user, onNavigate, onLogout, onElevate }) {
           .dash-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
+    </div>
+  );
+}
+
+// ===== ToolFrame =====
+// Hosts an independently-maintained tool (NR-BL, Audits, etc.) inside the
+// SPA via <iframe>. The tool file itself is untouched aside from its back
+// button, which posts a `trinova:navigate` message that App listens for.
+function ToolFrame({ tool, onBack }) {
+  return (
+    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "var(--ink-50)" }}>
+      <div
+        style={{
+          height: 56,
+          background: "white",
+          borderBottom: "1px solid rgba(148,163,184,0.2)",
+          display: "flex",
+          alignItems: "center",
+          padding: "0 20px",
+          gap: 14,
+          flexShrink: 0,
+        }}
+      >
+        <button onClick={onBack} className="btn btn-ghost" style={{ padding: "7px 14px", fontSize: 13 }}>
+          <span className="msym" style={{ fontSize: 17 }}>arrow_back</span>
+          Back to Dashboard
+        </button>
+        <span style={{ fontSize: 13.5, color: "var(--slate-400)", fontWeight: 500 }}>
+          ToolPortal &nbsp;/&nbsp; <strong style={{ color: "var(--navy-900)" }}>{tool.name}</strong>
+        </span>
+      </div>
+      <iframe
+        title={tool.name}
+        src={tool.src}
+        style={{ flex: 1, width: "100%", border: "none", display: "block" }}
+      />
     </div>
   );
 }
@@ -1231,6 +1207,31 @@ function AccessDenied({ onBack, onElevate }) {
 function App() {
   const [user, setUser] = useState(null);
   const [route, setRoute] = useState("dashboard");
+  const [activeTool, setActiveTool] = useState(null);
+
+  function openTool(tool) {
+    setActiveTool(tool);
+    setRoute("tool-frame");
+  }
+
+  function backFromTool() {
+    setActiveTool(null);
+    setRoute("dashboard");
+  }
+
+  // Listen for the embedded tool's "Back to ToolPortal" button, which posts
+  // a trinova:navigate message instead of doing a (previously broken)
+  // full-page navigation. This is the sole integration point between the
+  // SPA shell and the independently-maintained tool files.
+  useEffect(() => {
+    function onMessage(e) {
+      if (e.data && e.data.type === "trinova:navigate" && e.data.target === "dashboard") {
+        backFromTool();
+      }
+    }
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, []);
 
   // If returning from the audit tool via ?skip_login=true, restore the session
   useEffect(() => {
@@ -1290,7 +1291,19 @@ function App() {
     return <AccessDenied onBack={() => setRoute("dashboard")} onElevate={handleElevate} />;
   }
 
-  return <Dashboard user={user} onNavigate={handleNavigate} onLogout={handleLogout} onElevate={handleElevate} />;
+  if (route === "tool-frame" && activeTool) {
+    return <ToolFrame tool={activeTool} onBack={backFromTool} />;
+  }
+
+  return (
+    <Dashboard
+      user={user}
+      onNavigate={handleNavigate}
+      onLogout={handleLogout}
+      onElevate={handleElevate}
+      onOpenTool={openTool}
+    />
+  );
 }
 
 

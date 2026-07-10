@@ -121,7 +121,7 @@ td input[type=checkbox]{accent-color:var(--blue);width:15px;height:15px;cursor:p
     <a class="sb-item active" href="#">📋 Script Generator</a>
   </nav>
   <div class="sb-foot">
-    <button class="back-btn" onclick="window.location.href='toolportal.html?skip_login=true'">
+    <button class="back-btn" onclick="trinovaBackToPortal()">
       ← Back to ToolPortal
     </button>
   </div>
@@ -198,6 +198,17 @@ td input[type=checkbox]{accent-color:var(--blue);width:15px;height:15px;cursor:p
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/pyodide/v0.27.5/full/pyodide.js"></script>
 <script>
+// ── ToolPortal SPA back navigation ─────────────────────────────────────────
+// When embedded in the ToolPortal shell (via <iframe>), tell the parent to
+// navigate back to the dashboard. When opened standalone (e.g. by a
+// developer testing this file directly), there is no parent app to notify,
+// so this safely does nothing instead of navigating to a broken URL.
+function trinovaBackToPortal() {
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage({ type: 'trinova:navigate', target: 'dashboard' }, '*');
+  }
+}
+
 // ── Version data ──────────────────────────────────────────────────────────
 const VER = {"APP1": "25Q4", "APP7": "FGA359", "APP8": "cellrange", "APP2": "REV26.00", "APP3": "REV26.01", "APP5": "REV26.03", "APP6": "REV26.04", "APP9": "REV26.05"};
 const TICK = `<svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 4L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
@@ -240,7 +251,7 @@ function toast(msg, type) {
 // ── Excel → node IDs ──────────────────────────────────────────────────────
 let excelFile = null;
 let zipNodeName = "";
-let dasdfile = null;
+
 const excelIn = document.getElementById("excel-in");
 const dz      = document.getElementById("dz");
 const badge   = document.getElementById("excel-badge");
