@@ -1672,6 +1672,21 @@ timeToTriggerA6 : 1024
 
 """)
 
+                if cell in b29_cells:
+                    script.append(f"""set
+FDN : "SubNetwork=ONRM_ROOT_MO,MeContext={siteid},ManagedElement={siteid},ENodeBFunction=1,EUtranCellFDD={cell},UeMeasControl=1,ReportConfigSCellA1A2=1"
+a1a2ThresholdRsrq : -165
+hysteresisA1A2Rsrp : 10
+hysteresisA1A2Rsrq : 15
+timeToTriggerA2 : 40
+triggerQuantityA1A2 : RSRP
+
+set
+FDN : "SubNetwork=ONRM_ROOT_MO,MeContext={siteid},ManagedElement={siteid},ENodeBFunction=1,EUtranCellFDD={cell},UeMeasControl=1,ReportConfigSCellA6=1"
+timeToTriggerA6 : 40
+
+""")
+
                 if scell_count > 0 and cell not in b29_cells:
                     script.append(f"""set
 FDN : "SubNetwork=ONRM_ROOT_MO,MeContext={siteid},ManagedElement={siteid},ENodeBFunction=1,EUtranCellFDD={cell}"
