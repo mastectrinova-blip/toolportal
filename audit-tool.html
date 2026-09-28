@@ -1980,6 +1980,14 @@ connModePrioPSCell : 7
 
 
 """)
+            else:
+                script.append(f"""set
+FDN : "SubNetwork=ONRM_ROOT_MO,MeContext=xxSiteIDxx,ManagedElement=xxSiteIDxx,GNBCUCPFunction=1,TrafficSteering=1,TrStPSCellProfile=Default,TrStPSCellProfileUeCfg=Base"
+hiPrioDetMeasurementTime : 3000
+hiPrioDetStartTime : 5000
+rsrpCandidateA5 : {{threshold2=-104}}
+
+""")
 
 
             if is_idle:
@@ -3002,6 +3010,23 @@ dlCgSwitchMode : ENABLED
             else:
                 is_vonr = False
 
+			      # --------------------------------
+			      # 5G Bands
+			      # --------------------------------
+
+            fg_850_df = site_fg_df[site_fg_df["Operating Band"].astype(str).str.contains(r"N5|850", case=False, na=False)]
+            fg_pcs_df = site_fg_df[site_fg_df["Operating Band"].astype(str).str.contains(r"N2|PCS", case=False, na=False)]
+            fg_aws_df = site_fg_df[site_fg_df["Operating Band"].astype(str).str.contains(r"N5|AWS", case=False, na=False)]
+            fg_n77_df = site_fg_df[site_fg_df["Operating Band"].astype(str).str.contains(r"N77|N077", case=False, na=False)]
+            fg_n260_df = site_fg_df[site_fg_df["Operating Band"].astype(str).str.contains(r"N260", case=False, na=False)]
+
+            multiple_nr_bands = (
+                not fg_n77_df.empty or not fg_n260_df.empty
+                    ) and (
+                not fg_850_df.empty or
+                not fg_pcs_df.empty or
+                not fg_aws_df.empty
+            )
             # --------------------------------
             # cells - Node lvl
             # --------------------------------
@@ -3200,7 +3225,6 @@ dlCgSwitchMode : ENABLED
             )
 
             only_nr_lb = has_nr and bands.eq("850").all()
-            multiple_nr_bands = bands.nunique() > 1
             primary_upper_on_cells = set()
 
             # Case 1: No 5G present
